@@ -1,0 +1,61 @@
+# Essential Development Tools
+build-essential
+cmake
+git
+vim
+nano
+htop
+tree
+curl
+wget
+unzip
+zip
+jq
+net-tools
+openssh-server
+ufw
+fail2ban
+
+# Programming Languages
+python3
+python3-pip
+python3-venv
+python3-dev
+nodejs
+npm
+
+# Editors and IDEs
+code
+sublime-text
+
+# Version Control
+git
+git-lfs
+
+# Containerization
+docker-ce
+docker-ce-cli
+containerd.io
+docker-compose-plugin
+
+# Networking Tools
+nmap
+netcat
+tcpdump
+wireshark
+
+# System Monitoring
+htop
+iotop
+nethogs
+glances
+
+# File Management
+ranger
+mc
+rsync
+
+# Compression Tools
+p7zip-full
+rar
+unrar

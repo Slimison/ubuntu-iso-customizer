@@ -1,0 +1,132 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Make Scripts Executable",
+            "type": "shell",
+            "command": "find",
+            "args": [
+                "${workspaceFolder}/scripts",
+                "-name",
+                "*.sh",
+                "-exec",
+                "chmod",
+                "+x",
+                "{}",
+                ";"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Validate Scripts",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "for script in ${workspaceFolder}/scripts/*.sh; do echo \"Checking $script\"; bash -n \"$script\" && echo \"✓ Syntax OK\" || echo \"✗ Syntax Error\"; done"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build Custom ISO",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/iso-builder.sh",
+            "args": [
+                "/path/to/ubuntu.iso",
+                "/path/to/output/custom-ubuntu.iso"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Test Post-Install Script",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "${workspaceFolder}/scripts/post-install.sh",
+                "--dry-run"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Install Development Tools",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/tools/install-tools.sh",
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Check Dependencies",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "echo 'Checking required dependencies...'; for cmd in xorriso squashfs-tools genisoimage rsync; do if command -v $cmd >/dev/null 2>&1; then echo \"✓ $cmd is installed\"; else echo \"✗ $cmd is missing\"; fi; done"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean Temporary Files",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "sudo rm -rf /tmp/ubuntu-customizer-* && echo 'Temporary files cleaned'"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

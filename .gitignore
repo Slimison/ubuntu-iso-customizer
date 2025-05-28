@@ -1,0 +1,69 @@
+# Ubuntu ISO Customizer - Git Ignore Rules
+
+# Large ISO files
+*.iso
+*.img
+
+# Compressed archives
+*.tgz
+*.tar.gz
+*.zip
+
+# Build workspace
+iso-workspace/
+build/
+dist/
+
+# Personal configuration (use .example files)
+configs/config.env
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# Personal memory exports
+.mpc/
+memory.json
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Cache directories
+cache/
+.cache/
+
+# Local test outputs
+test-output/
+test-results/
+
+# Mount points (used during ISO building)
+mnt/
+mount/
+
+# Personal keys and certificates
+*.pem
+*.key
+*.crt
+*.p12
+
+# Package manager files
+node_modules/
+__pycache__/
+*.pyc
+
+# Local development
+.env
+.local
