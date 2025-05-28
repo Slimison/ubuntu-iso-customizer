@@ -137,6 +137,15 @@ prepare_custom_content() {
 modify_iso() {
     log "Modifying ISO configuration..."
     
+    # Replace default preseed with our custom configuration
+    if [[ -f "$PROJECT_ROOT/configs/preseed.cfg" ]]; then
+        log "Replacing default preseed configuration..."
+        cp "$PROJECT_ROOT/configs/preseed.cfg" "$CUSTOM_DIR/preseed/ubuntu.seed"
+        log_success "Custom preseed configuration installed"
+    else
+        log_warning "No custom preseed.cfg found, using default"
+    fi
+    
     # Create autorun script
     cat > "$CUSTOM_DIR/custom-scripts/autorun.sh" << 'EOF'
 #!/bin/bash
@@ -228,7 +237,6 @@ if [ -d /cdrom/custom-scripts ]; then
     cp -r /cdrom/custom-scripts/* /root/custom-scripts/
     chmod +x /root/custom-scripts/*.sh
 fi
-EOF
     #     
     #     chmod +x scripts/casper-bottom/99custom
     #     
