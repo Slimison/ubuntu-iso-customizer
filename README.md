@@ -45,6 +45,22 @@ ubuntu-iso-customizer/
 
 ## Quick Start
 
+### 0. **Clone and Setup (New Installation)**
+```bash
+# Clone the repository
+git clone https://github.com/Slimison/ubuntu-iso-customizer.git
+cd ubuntu-iso-customizer
+
+# Run setup script to install dependencies and fix permissions
+./setup.sh
+
+# This will:
+# - Install required dependencies (xorriso, squashfs-tools, etc.)
+# - Fix any root ownership issues from previous builds
+# - Make all scripts executable
+# - Create configuration files
+```
+
 ### 1. **Test the Custom ISO (Recommended First Step)**
 ```bash
 # Test boot in virtual machine

@@ -4,6 +4,22 @@
 # Creates a customized Ubuntu ISO with post-installation scripts
 #=======================================
 
+# Check if running as root
+if [[ $EUID -ne 0 ]]; then
+    echo "This script must be run as root (use sudo)"
+    echo "However, all files will be owned by the original user to prevent permission issues"
+    exit 1
+fi
+
+# Get the original user (the one who ran sudo)
+ORIGINAL_USER="${SUDO_USER:-$(logname)}"
+ORIGINAL_GROUP="$(id -gn "$ORIGINAL_USER")"
+
+log_ownership_fix() {
+    echo "Fixing ownership: $1 -> $ORIGINAL_USER:$ORIGINAL_GROUP"
+    chown -R "$ORIGINAL_USER:$ORIGINAL_GROUP" "$1"
+}
+
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
@@ -106,6 +122,9 @@ extract_iso() {
     log "Copying ISO contents..."
     rsync -av "$MOUNT_POINT/" "$EXTRACT_DIR/"
     
+    # Fix ownership of extracted files
+    log_ownership_fix "$EXTRACT_DIR"
+    
     # Unmount
     umount "$MOUNT_POINT"
     
@@ -119,6 +138,9 @@ prepare_custom_content() {
     # Copy extracted content to custom directory
     rsync -av "$EXTRACT_DIR/" "$CUSTOM_DIR/"
     
+    # Fix ownership after copying
+    log_ownership_fix "$CUSTOM_DIR"
+    
     # Create custom scripts directory
     mkdir -p "$CUSTOM_DIR/custom-scripts"
     
@@ -129,6 +151,9 @@ prepare_custom_content() {
     
     # Make scripts executable
     chmod +x "$CUSTOM_DIR/custom-scripts"/*.sh
+    
+    # Fix ownership after all modifications
+    log_ownership_fix "$CUSTOM_DIR"
     
     log_success "Custom content prepared"
 }
@@ -141,6 +166,7 @@ modify_iso() {
     if [[ -f "$PROJECT_ROOT/configs/preseed.cfg" ]]; then
         log "Replacing default preseed configuration..."
         cp "$PROJECT_ROOT/configs/preseed.cfg" "$CUSTOM_DIR/preseed/ubuntu.seed"
+        chmod 644 "$CUSTOM_DIR/preseed/ubuntu.seed"
         log_success "Custom preseed configuration installed"
     else
         log_warning "No custom preseed.cfg found, using default"
@@ -396,8 +422,9 @@ main() {
     check_sudo
     check_dependencies
     
-    # Create workspace
+    # Create workspace with proper ownership
     mkdir -p "$ISO_WORKSPACE"
+    log_ownership_fix "$ISO_WORKSPACE"
     
     # Build process
     extract_iso "$ORIGINAL_ISO" || exit 1
@@ -406,6 +433,11 @@ main() {
     update_filesystem_size || exit 1
     generate_checksums || exit 1
     create_iso || exit 1
+    
+    # Fix final ownership of all created files
+    log "Fixing final ownership of all created files..."
+    log_ownership_fix "$ISO_WORKSPACE"
+    log_ownership_fix "$OUTPUT_ISO"
     
     log_success "ISO customization completed!"
     log "Custom ISO: $OUTPUT_ISO"

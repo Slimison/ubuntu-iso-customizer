@@ -118,6 +118,31 @@ install_dependencies() {
 setup_workspace() {
     print_status "Setting up workspace..."
     
+    # Fix ownership of the entire project directory first
+    print_status "Ensuring correct file ownership..."
+    current_user=$(whoami)
+    
+    # Check if any files are owned by root and fix them
+    if find "$PROJECT_ROOT" -user root -print -quit | grep -q .; then
+        print_warning "Found root-owned files, attempting to fix ownership..."
+        if sudo chown -R "$current_user:$current_user" "$PROJECT_ROOT"; then
+            print_success "Fixed file ownership to $current_user:$current_user"
+        else
+            print_error "Failed to fix file ownership. You may need to run: sudo chown -R \$USER:\$USER $(basename "$PROJECT_ROOT")"
+        fi
+    else
+        print_success "All files are correctly owned by $current_user"
+    fi
+    
+    # Remove iso-workspace if it exists and is owned by root
+    if [ -d "$PROJECT_ROOT/iso-workspace" ]; then
+        if [ "$(stat -c '%U' "$PROJECT_ROOT/iso-workspace" 2>/dev/null)" = "root" ]; then
+            print_warning "Removing root-owned iso-workspace directory..."
+            sudo rm -rf "$PROJECT_ROOT/iso-workspace"
+            print_success "Removed root-owned iso-workspace"
+        fi
+    fi
+    
     # Create necessary directories
     local dirs=(
         "$HOME/.local/share/ubuntu-customizer"

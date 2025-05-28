@@ -10,6 +10,8 @@
 *.zip
 
 # Build workspace
+# NOTE: iso-workspace is ignored to prevent root ownership issues
+# It's created automatically by iso-builder.sh with proper user ownership
 iso-workspace/
 build/
 dist/

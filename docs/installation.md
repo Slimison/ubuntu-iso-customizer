@@ -19,15 +19,28 @@ Before starting, ensure you have:
 First, clone or download this project:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Slimison/ubuntu-iso-customizer.git
 cd ubuntu-iso-customizer
 ```
 
-Make all scripts executable:
+**⚠️ Important: Fix permissions after cloning**
+
+If you encounter permission issues (especially if the project was previously built with root), run:
 
 ```bash
+# Fix any ownership/permission issues
+./fix-permissions.sh
+
+# Then run the setup script
+./setup.sh
+```
+
+Alternative manual permission fix:
+```bash
+# If fix-permissions.sh doesn't work
+sudo chown -R $USER:$USER ubuntu-iso-customizer/
 chmod +x scripts/*.sh
-chmod +x scripts/tools/*.sh
+chmod +x *.sh
 ```
 
 ### 2. Install Required Dependencies
@@ -102,9 +115,11 @@ sync
 ### 7. Install Ubuntu
 
 1. Boot from your custom USB/DVD
-2. Install Ubuntu normally
-3. After installation and reboot, the post-installation script will run automatically
-4. Alternatively, run the script manually from the desktop shortcut
+2. **Select "Automated Install Ubuntu (Custom)"** for fully automated installation with autorun
+3. Or select "Try or Install Ubuntu" for normal installation with autorun
+4. The installation will proceed automatically using the preseed configuration
+5. After installation and reboot, the post-installation script will run automatically
+6. Check service status: `systemctl status custom-post-install.service`
 
 ## Post-Installation Features
 
@@ -141,6 +156,15 @@ Your custom Ubuntu installation will include:
 
 ### Common Issues
 
+**Permission denied errors or read-only files:**
+```bash
+# Run the permission fix script
+./fix-permissions.sh
+
+# Or manually fix ownership
+sudo chown -R $USER:$USER .
+```
+
 **ISO build fails with permissions error:**
 ```bash
 # Ensure you're running with sudo
@@ -156,6 +180,15 @@ sudo apt install xorriso squashfs-tools genisoimage isolinux syslinux-utils
 **Post-installation script doesn't run:**
 - Check if the systemd service is enabled: `systemctl status custom-post-install.service`
 - Run manually: `sudo /usr/local/bin/custom-setup/post-install.sh`
+
+**Permission issues with iso-workspace:**
+- The iso-workspace directory must be owned by the user, not root
+- Run: `sudo chown -R $USER:$USER ubuntu-iso-customizer/`
+- Ensure all files are writable: `find iso-workspace/ -type f -exec chmod 644 {} \;`
+
+**ISO build fails with read-only file errors:**
+- Fix ownership: `sudo chown -R $USER:$USER ubuntu-iso-customizer/`
+- Make files writable: `chmod 644 iso-workspace/custom/boot/grub/grub.cfg`
 
 **Custom packages not installing:**
 - Check internet connection during installation
